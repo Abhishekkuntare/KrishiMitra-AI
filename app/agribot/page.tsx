@@ -35,7 +35,7 @@ function AgriBot() {
 
     {/* Tabs */}
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <TabsList className="grid w-full grid-cols-5 mb-8 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
+      <TabsList className="grid w-full grid-cols-4 mb-8 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
         <TabsTrigger value="chat" className="flex items-center gap-2 text-gray-700 dark:text-gray-300 data-[state=active]:bg-green-100 dark:data-[state=active]:bg-green-900 data-[state=active]:text-green-800 dark:data-[state=active]:text-green-400 rounded-md">
           <MessageCircle className="w-4 h-4" />
           {t("nav.chat")}
@@ -52,10 +52,10 @@ function AgriBot() {
           <Bug className="w-4 h-4" />
           {t("nav.disease")}
         </TabsTrigger>
-        <TabsTrigger value="dashboard" className="flex items-center gap-2 text-gray-700 dark:text-gray-300 data-[state=active]:bg-green-100 dark:data-[state=active]:bg-green-900 data-[state=active]:text-green-800 dark:data-[state=active]:text-green-400 rounded-md">
+        {/* <TabsTrigger value="dashboard" className="flex items-center gap-2 text-gray-700 dark:text-gray-300 data-[state=active]:bg-green-100 dark:data-[state=active]:bg-green-900 data-[state=active]:text-green-800 dark:data-[state=active]:text-green-400 rounded-md">
           <BarChart3 className="w-4 h-4" />
           {t("nav.dashboard")}
-        </TabsTrigger>
+        </TabsTrigger> */}
       </TabsList>
 
       {/* Tab Contents */}

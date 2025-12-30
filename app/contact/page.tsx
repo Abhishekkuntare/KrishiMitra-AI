@@ -118,7 +118,7 @@ export default function ContactPage() {
             <div className="flex items-center gap-4">
               <MapPin className="w-6 h-6 text-green-600 dark:text-green-400" />
               <span className="text-gray-700 dark:text-gray-300">
-                123 AgriBot Street, Nagpur, India
+                123 AgriBot Street, Amravati, Maharashtra, India
               </span>
             </div>
             <div className="flex items-center gap-4">
