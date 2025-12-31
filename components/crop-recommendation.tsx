@@ -1180,10 +1180,7 @@ const translatedSeason =
 const translatedState =localizedStates[language]?.[state] || state
 
 setRecommendation({
-  crop:
-    language === "hi" || language === "mr"
-      ? `${selectedCropHindi} (${selectedCrop})`
-      : selectedCrop,
+  crop: inputData.crop,
   confidence: Math.floor(Math.random() * 30) + 70,
   reasons: loc.reasons,
   expectedYield: `${Math.floor(Math.random() * 15) + 20} ${unit}`,

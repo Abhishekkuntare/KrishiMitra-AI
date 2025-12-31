@@ -14,6 +14,7 @@ import { LanguageProvider, useLanguage } from "@/contexts/language-context"
 
 function AgriBot() {
   const [activeTab, setActiveTab] = useState("chat")
+    const [selectedCrop, setSelectedCrop] = useState<string>("")
   const { t } = useLanguage()
 
   return (
@@ -78,7 +79,10 @@ function AgriBot() {
             <CardDescription className="text-gray-500 dark:text-gray-400">{t("crops.description")}</CardDescription>
           </CardHeader>
           <CardContent>
-            <CropRecommendation />
+            <CropRecommendation 
+            selectedCrop={selectedCrop}
+            setSelectedCrop={setSelectedCrop}
+            />
           </CardContent>
         </Card>
       </TabsContent>
