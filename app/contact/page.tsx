@@ -119,7 +119,7 @@ ${message}
 
           <div className="flex gap-4 items-center">
             <Phone className="text-green-600" />
-            <span>+91 98765 43210</span>
+            <span>+91 9588415771</span>
           </div>
         </div>
 
