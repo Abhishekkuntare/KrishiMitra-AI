@@ -251,7 +251,6 @@ export default function DiseasePredictor() {
     setError(null)
 
     try {
-      // Convert base64 to blob
       const response = await fetch(selectedImage)
       const blob = await response.blob()
 
@@ -269,6 +268,26 @@ export default function DiseasePredictor() {
 
       const result = await predictionResponse.json()
       setPrediction(result)
+
+      // 🔥 TRANSLATE EVERYTHING
+      const translated = {
+        ...result,
+        disease: await translateText(result.disease, language),
+        severity: await translateText(result.severity, language),
+        description: await translateText(result.description, language),
+        symptoms: await Promise.all(
+          result.symptoms.map((s: string) => translateText(s, language))
+        ),
+        treatment: await Promise.all(
+          result.treatment.map((t: string) => translateText(t, language))
+        ),
+        prevention: await Promise.all(
+          result.prevention.map((p: string) => translateText(p, language))
+        ),
+      }
+
+      setTranslatedData(translated)
+
     } catch (err) {
       setError("Failed to analyze the image. Please try again.")
       console.error(err)
@@ -305,8 +324,24 @@ export default function DiseasePredictor() {
   const { t } = useLanguage()
 
 
+ async function translateText(text: string, targetLang: string) {
+  const res = await fetch("/api/translate", {
+    method: "POST",
+    body: JSON.stringify({
+      text,
+      targetLanguage: targetLang,
+    }),
+  })
 
+  const data = await res.json()
+  return data.translated
+}
 
+  const { language } = useLanguage()
+
+  const [translatedData, setTranslatedData] = useState<DiseasePrediction | null>(null)
+
+  const data = translatedData || prediction
   return (
     <div className="space-y-6">
       {/* Image Upload Section */}
@@ -427,8 +462,8 @@ export default function DiseasePredictor() {
                   {t("disease.detected")}
                 </h4>
                 <p className="text-lg font-semibold text-blue-800 dark:text-blue-300">
-                  {prediction.disease}
-                </p>
+  {data?.disease}
+</p>
               </div>
 
               <div>
@@ -441,13 +476,14 @@ export default function DiseasePredictor() {
               <div>
                 <h4 className="font-medium mb-2 flex items-center gap-2 text-black dark:text-white">
                   {t("disease.severity")}
-                  <span className={getSeverityColor(prediction.severity)}>
-                    {getSeverityIcon(prediction.severity)}
-                  </span>
+                 <span className={getSeverityColor(data?.severity || "")}>
+  {getSeverityIcon(data?.severity || "")}
+</span>
                 </h4>
-                <p className={`text-lg font-semibold ${getSeverityColor(prediction.severity)}`}>
-                  {prediction.severity}
-                </p>
+                
+<p className={`text-lg font-semibold ${getSeverityColor(data?.severity || "")}`}>
+  {data?.severity}
+</p>
               </div>
             </div>
 
@@ -456,14 +492,14 @@ export default function DiseasePredictor() {
               <h4 className="font-medium mb-2 text-black dark:text-white">
                 {t("disease.description.label")}
               </h4>
-              <p className="text-sm text-gray-700 dark:text-gray-300">{prediction.description}</p>
+              <p className="text-sm text-gray-700 dark:text-gray-300">{data?.description}</p>
             </div>
 
             {/* Symptoms */}
             <div>
               <h4 className="font-medium mb-2 text-black dark:text-white">{t("disease.symptoms")}</h4>
               <ul className="list-disc list-inside space-y-1 text-sm">
-                {prediction.symptoms.map((symptom, index) => (
+                {data?.symptoms.map((symptom, index) => (
                   <li key={index}>{symptom}</li>
                 ))}
               </ul>
@@ -475,7 +511,7 @@ export default function DiseasePredictor() {
                 {t("disease.treatment")}
               </h4>
               <ul className="list-disc list-inside space-y-1 text-sm">
-                {prediction.treatment.map((treatment, index) => (
+                {data?.treatment?.map((treatment, index) => (
                   <li key={index}>{treatment}</li>
                 ))}
               </ul>
@@ -483,9 +519,11 @@ export default function DiseasePredictor() {
 
             {/* Prevention */}
             <div>
-              <h4 className="font-medium mb-2 text-blue-700 dark:text-blue-300">{t("disease.prevention")}</h4>
+              <h4 className="font-medium mb-2 text-blue-700 dark:text-blue-300">
+                {t("disease.prevention")}
+              </h4>
               <ul className="list-disc list-inside space-y-1 text-sm">
-                {prediction.prevention.map((tip, index) => (
+                {data?.prevention?.map((tip, index) => (
                   <li key={index}>{tip}</li>
                 ))}
               </ul>

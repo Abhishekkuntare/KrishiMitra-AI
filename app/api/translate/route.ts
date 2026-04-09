@@ -2,6 +2,7 @@ import { google } from "@ai-sdk/google"
 import { generateText } from "ai"
 import { NextResponse } from "next/server"
 
+
 // Simple translation dictionary for basic agricultural terms
 const basicTranslations = {
   en: {
@@ -56,6 +57,7 @@ const basicTranslations = {
   },
 }
 
+
 function basicTranslate(text: string, targetLanguage: string): string {
   const translations = basicTranslations.en[targetLanguage]
   if (!translations) return text
@@ -69,59 +71,25 @@ function basicTranslate(text: string, targetLanguage: string): string {
   return translatedText
 }
 
+
 export async function POST(req: Request) {
-  let requestBody: { text?: string; targetLanguage?: string; context?: string } = {}
   try {
-    requestBody = await req.json()
-    const { text, targetLanguage, context = "agriculture" } = requestBody
+    const { text, targetLanguage } = await req.json()
 
-    const GOOGLE_AI_STUDIO_API_KEY = process.env.GOOGLE_GENERATIVE_AI_API_KEY
+    const response = await fetch(
+      `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLanguage}&dt=t&q=${encodeURIComponent(text)}`
+    )
 
-    if (!GOOGLE_AI_STUDIO_API_KEY) {
-      console.error("Translation API: GOOGLE_GENERATIVE_AI_API_KEY is not set.")
-      throw new Error("Google AI Studio API Key is not configured.")
-    }
+    const data = await response.json()
 
-    const languageNames = {
-      en: "English",
-      hi: "Hindi (हिंदी)",
-      mr: "Marathi (मराठी)",
-      ta: "Tamil (தமிழ்)",
-      te: "Telugu (తెలుగు)",
-    }
-
-    const systemPrompt = `You are a professional translator specializing in agricultural and farming terminology for Indian languages.
-
-Translate the given text to ${languageNames[targetLanguage]} while:
-1. Maintaining the original meaning and context
-2. Using appropriate agricultural terminology
-3. Keeping the tone suitable for farmers
-4. Preserving any technical accuracy
-
-Context: ${context}
-
-Only return the translated text, nothing else.`
-
-    const result = await generateText({
-      model: google("gemini-1.0-pro", { apiKey: GOOGLE_AI_STUDIO_API_KEY }),
-      system: systemPrompt,
-      prompt: text,
+    return NextResponse.json({
+      translated: data[0][0][0],
     })
-
-    return NextResponse.json({ translation: result.text })
   } catch (error) {
-    console.error("Translation error:", error)
-
-    // Fallback to basic translation on error
-    const basicTranslation = basicTranslate(requestBody.text || "", requestBody.targetLanguage || "en")
-
-    // Return a JSON error response with a 500 status code
+    console.error(error)
     return NextResponse.json(
-      {
-        translation: basicTranslation,
-        error: "Translation service temporarily unavailable. Basic translation provided.",
-      },
-      { status: 500 },
+      { translated: "Translation failed" },
+      { status: 500 }
     )
   }
 }
